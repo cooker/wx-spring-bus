@@ -153,7 +153,7 @@ class BusEventConsumerListenerTest {
     class Success {
 
         @Test
-        @DisplayName("发布事件 -> 消费者收到 -> 写入反馈 attemptNo=1 success=true -> rollup 回写 events.status=CONSUMED")
+        @DisplayName("发布事件 -> 消费者收到 -> 更新待消费记录 success=true -> rollup 回写 events.status=CONSUMED")
         void publish_thenConsume_success_feedbackAndRollup() throws Exception {
             assertThat(eventPublishService.publish(sampleEnvelope()).success()).isTrue();
 
@@ -169,9 +169,9 @@ class BusEventConsumerListenerTest {
 
             List<EventConsumptionDocument> list =
                 eventConsumptionRepository.findByEventIdAndConsumerIdOrderByAttemptNoDesc(EVENT_ID, CONSUMER_ID);
-            assertThat(list).hasSizeGreaterThanOrEqualTo(2);
+            assertThat(list).hasSize(1);
             EventConsumptionDocument latest = list.get(0);
-            assertThat(latest.getAttemptNo()).isEqualTo(1);
+            assertThat(latest.getAttemptNo()).isEqualTo(0);
             assertThat(latest.getSuccess()).isTrue();
 
             // 这里不强依赖 rollup 队列里是否还有消息（可能被监听器消费掉），直接调用 rollup 服务验证回写逻辑
@@ -187,7 +187,7 @@ class BusEventConsumerListenerTest {
     class Failure {
 
         @Test
-        @DisplayName("消费抛异常 -> 写入反馈 attemptNo=1 success=false -> rollup 回写 events.status=FAILED（不 requeue）")
+        @DisplayName("消费抛异常 -> 更新待消费记录 success=false -> rollup 回写 events.status=FAILED（不 requeue）")
         void publish_thenConsume_failure_feedbackAndRollup() throws Exception {
             testConsumer.failNext.set(true);
             assertThat(eventPublishService.publish(sampleEnvelope()).success()).isTrue();
@@ -204,9 +204,9 @@ class BusEventConsumerListenerTest {
 
             List<EventConsumptionDocument> list =
                 eventConsumptionRepository.findByEventIdAndConsumerIdOrderByAttemptNoDesc(EVENT_ID, CONSUMER_ID);
-            assertThat(list).hasSizeGreaterThanOrEqualTo(2);
+            assertThat(list).hasSize(1);
             EventConsumptionDocument latest = list.get(0);
-            assertThat(latest.getAttemptNo()).isEqualTo(1);
+            assertThat(latest.getAttemptNo()).isEqualTo(0);
             assertThat(latest.getSuccess()).isFalse();
             assertThat(latest.getErrorMessage()).isEqualTo(FAILURE_MESSAGE);
             assertThat(latest.getErrorCode()).isEqualTo(RuntimeException.class.getSimpleName());

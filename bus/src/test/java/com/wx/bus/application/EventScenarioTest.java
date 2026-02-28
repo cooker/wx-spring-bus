@@ -191,7 +191,6 @@ class EventScenarioTest {
         assertThat(eventRepository.findById(e3Id)).isPresent();
         List<EventConsumptionDocument> allE1 = eventConsumptionRepository.findByEventIdOrderByAttemptNoDesc(e1Id);
         assertThat(allE1).hasSizeGreaterThanOrEqualTo(2);
-        assertThat(allE1.stream().filter(c -> c.getAttemptNo() > 0).map(EventConsumptionDocument::getSuccess))
-            .contains(true);
+        assertThat(allE1.stream().filter(c -> Boolean.TRUE.equals(c.getSuccess()))).isNotEmpty();
     }
 }
