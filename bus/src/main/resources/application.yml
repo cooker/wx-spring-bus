@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: bus
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@localhost:27017/wx-bus?authSource=admin
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: /
+
+# 业务事件发布到 topic 交换机，routing key = topic；消费汇总使用独立队列串行回写
+bus:
+  mq:
+    events-exchange: bus.events
+    rollup-queue: bus.consumption-rollup
+  # 消费者：配置后需实现 BusEventConsumer Bean，队列名为 bus.consumer.{consumer-id}
+  # consumer:
+  #   consumer-id: member-service
+  #   topics: order.purchased,order.cancelled

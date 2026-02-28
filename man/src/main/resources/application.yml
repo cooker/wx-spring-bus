@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: man
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@localhost:27017/wx-bus-test?authSource=admin
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: /
+
+server:
+  port: 8081
+
+# 管理端不配置消费者，仅读库 + 重推；与 bus 共用交换机和库
+bus:
+  aop:
+    enabled: true    # 切面已排除 Controller 层且不强制 CGLIB，可与 ProjectingArgumentResolver 共存
+  mq:
+    events-exchange: bus.events

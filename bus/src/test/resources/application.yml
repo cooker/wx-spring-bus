@@ -1,0 +1,20 @@
+# 单元测试配置：使用本机已安装的 MongoDB、RabbitMQ，测试库与正式环境隔离
+# 若本机 MongoDB 用户建在其他库，请将 authSource=admin 改为对应用户所在库
+# 若本机 RabbitMQ 使用其他用户或 vhost，请修改下方 username/password/virtual-host
+spring:
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@localhost:27017/wx-bus-test?authSource=admin
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: /
+
+bus:
+  aop:
+    enabled: false   # 测试中关闭 @PublishEvent 切面，避免 AOP 与测试上下文冲突
+  mq:
+    events-exchange: bus.events
+    rollup-queue: bus.consumption-rollup
