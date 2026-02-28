@@ -34,3 +34,10 @@
 - JDK 21、Spring Boot 3.2.x、MongoDB、RabbitMQ
 - 开发模式：DDD
 - 前端：Vue 3 + Vite，界面使用 UI UX Pro Max
+
+
+![](https://cdn.jsdelivr.net/gh/gulugulu-lab/img0@main/2026/02/28/cmr7oA.png)
+![](https://cdn.jsdelivr.net/gh/gulugulu-lab/img0@main/2026/02/28/UNdcNx.png)
+![](https://cdn.jsdelivr.net/gh/gulugulu-lab/img0@main/2026/02/28/5huqj8.png)
+![](https://cdn.jsdelivr.net/gh/gulugulu-lab/img0@main/2026/02/28/DvqP40.png)
+![](https://cdn.jsdelivr.net/gh/gulugulu-lab/img0@main/2026/02/28/0SsIUy.png)
