@@ -63,11 +63,11 @@ public class EventQueryService {
         if (userId != null && !userId.isBlank()) {
             q.addCriteria(Criteria.where("initiator.userId").is(userId.trim()));
         }
-        if (occurredAtFrom != null) {
-            q.addCriteria(Criteria.where("occurredAt").gte(occurredAtFrom));
-        }
-        if (occurredAtTo != null) {
-            q.addCriteria(Criteria.where("occurredAt").lte(occurredAtTo));
+        if (occurredAtFrom != null || occurredAtTo != null) {
+            Criteria range = Criteria.where("occurredAt");
+            if (occurredAtFrom != null) range.gte(occurredAtFrom);
+            if (occurredAtTo != null) range.lte(occurredAtTo);
+            q.addCriteria(range);
         }
         if (traceId != null && !traceId.isBlank()) {
             q.addCriteria(Criteria.where("traceId").is(traceId.trim()));

@@ -28,6 +28,11 @@
   ```bash
   cd man-vue && npm i && npm run dev
   ```
+- **管理后台内嵌到 man（单端口访问）**：将 man-vue 打包进 man，访问 http://localhost:8081 即为管理端页面。
+  ```bash
+  ./scripts/build-man-vue-into-man.sh
+  mvn -pl man spring-boot:run
+  ```
 
 ## 技术栈
 
