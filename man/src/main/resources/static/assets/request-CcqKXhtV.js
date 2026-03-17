@@ -1,0 +1,1 @@
+const o="/api/v1";async function r(t,s={}){const n=t.startsWith("http")?t:`${o}${t.startsWith("/")?t:"/"+t}`,e=s.body!=null,a=await fetch(n,{...s,headers:{...e?{"Content-Type":"application/json"}:{},...s.headers}}),c=await a.json().catch(()=>({}));return{ok:a.ok,data:c,status:a.status}}export{r};

@@ -46,6 +46,3 @@ Thumbs.db
 # Build / out
 out/
 build/
-
-# man 内嵌管理后台（由 scripts/build-man-vue-into-man.sh 生成）
-man/src/main/resources/static/
