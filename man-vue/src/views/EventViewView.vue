@@ -76,6 +76,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { getEventDetail, getEventList, getTopicConfigList } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -167,11 +168,9 @@ const callChainTreeData = computed(() => {
 
 async function loadTopicConfigs() {
   try {
-    const res = await fetch('/api/topic-configs')
-    if (!res.ok) return
-    const data = await res.json()
+    const list = await getTopicConfigList()
     const map = {}
-    if (Array.isArray(data)) data.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
+    list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
     topicNameZhMap.value = map
   } catch {
     // ignore
@@ -223,13 +222,12 @@ async function loadEvent() {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch(`/api/events/${route.params.eventId}`)
-    if (!res.ok) {
-      if (res.status === 404) error.value = '事件不存在'
-      else throw new Error(res.statusText)
+    const result = await getEventDetail(route.params.eventId)
+    if (result?.notFound) {
+      error.value = '事件不存在'
       return
     }
-    event.value = await res.json()
+    event.value = result
   } catch (e) {
     error.value = e.message || '加载失败'
   } finally {
@@ -240,9 +238,7 @@ async function loadEvent() {
 async function loadTraceEvents() {
   if (!event.value?.traceId) return
   try {
-    const res = await fetch(`/api/events?traceId=${encodeURIComponent(event.value.traceId)}&size=100`)
-    if (!res.ok) return
-    const data = await res.json()
+    const data = await getEventList({ traceId: event.value.traceId, size: 100 })
     traceEvents.value = data.content || []
   } catch {
     traceEvents.value = []

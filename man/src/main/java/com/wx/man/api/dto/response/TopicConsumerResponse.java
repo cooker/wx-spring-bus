@@ -1,9 +1,9 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.response;
 
 import java.time.Instant;
 
 /**
- * Topic–消费者关联配置 DTO（列表/详情响应）。
+ * Topic–消费者关联配置（列表/详情响应）。
  *
  * @param id          配置 ID
  * @param topic       事件 topic 名称
@@ -14,7 +14,7 @@ import java.time.Instant;
  * @param createdAt   配置创建时间
  * @param updatedAt   配置最后修改时间
  */
-public record TopicConsumerDto(
+public record TopicConsumerResponse(
     String id,
     String topic,
     String consumerId,

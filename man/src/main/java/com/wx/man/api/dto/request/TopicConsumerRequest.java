@@ -1,4 +1,4 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Size;
  * @param sortOrder   排序权重，可选；用于管理端列表展示顺序
  * @param description 配置说明，长度 &lt;= 512，可选
  */
-public record TopicConsumerRequestDto(
+public record TopicConsumerRequest(
     @NotBlank(message = "topic 不能为空")
     @Size(max = 256)
     String topic,

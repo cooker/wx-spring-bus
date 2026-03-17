@@ -1,9 +1,9 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.response;
 
 import java.time.Instant;
 
 /**
- * Topic 配置 DTO（列表/详情响应）。
+ * Topic 配置（列表/详情响应）。
  *
  * @param id          配置 ID
  * @param topic       事件 topic 名称（唯一标识某类事件）
@@ -12,7 +12,7 @@ import java.time.Instant;
  * @param createdAt   配置创建时间
  * @param updatedAt   配置最后修改时间
  */
-public record TopicConfigDto(
+public record TopicConfigResponse(
     String id,
     String topic,
     String nameZh,

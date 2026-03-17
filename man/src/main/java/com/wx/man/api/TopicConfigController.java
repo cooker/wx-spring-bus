@@ -2,8 +2,8 @@ package com.wx.man.api;
 
 import com.wx.bus.infrastructure.mongo.TopicConfigDocument;
 import com.wx.bus.infrastructure.mongo.TopicConfigRepository;
-import com.wx.man.api.dto.TopicConfigDto;
-import com.wx.man.api.dto.TopicConfigRequestDto;
+import com.wx.man.api.dto.request.TopicConfigRequest;
+import com.wx.man.api.dto.response.TopicConfigResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ import java.util.Optional;
  * 管理端：Topic 配置表 CRUD（维护 topic 中文名称等）。
  */
 @RestController
-@RequestMapping("/api/topic-configs")
+@RequestMapping("/api/v1/topic-configs")
 public class TopicConfigController {
 
     private final TopicConfigRepository topicConfigRepository;
@@ -39,7 +39,7 @@ public class TopicConfigController {
      * 全量列表；可选按 topic 关键字筛选。
      */
     @GetMapping
-    public List<TopicConfigDto> list(@RequestParam(required = false) String topic) {
+    public List<TopicConfigResponse> list(@RequestParam(required = false) String topic) {
         Sort sort = Sort.by("topic");
         List<TopicConfigDocument> list = topic != null && !topic.isBlank()
             ? topicConfigRepository.findAllByTopicContaining(topic.trim(), sort)
@@ -51,7 +51,7 @@ public class TopicConfigController {
      * 单条详情（按 id）。
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TopicConfigDto> get(@PathVariable String id) {
+    public ResponseEntity<TopicConfigResponse> get(@PathVariable String id) {
         return topicConfigRepository.findById(id)
             .map(doc -> ResponseEntity.ok(toDto(doc)))
             .orElse(ResponseEntity.notFound().build());
@@ -61,7 +61,7 @@ public class TopicConfigController {
      * 新增。
      */
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TopicConfigRequestDto body) {
+    public ResponseEntity<?> create(@Valid @RequestBody TopicConfigRequest body) {
         String topic = body.topic().trim();
         if (topicConfigRepository.findByTopic(topic).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -82,7 +82,7 @@ public class TopicConfigController {
      * 更新。
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody TopicConfigRequestDto body) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody TopicConfigRequest body) {
         Optional<TopicConfigDocument> opt = topicConfigRepository.findById(id);
         if (opt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -113,8 +113,8 @@ public class TopicConfigController {
         return ResponseEntity.ok().body(new MessageBody(true, "已删除"));
     }
 
-    private TopicConfigDto toDto(TopicConfigDocument doc) {
-        return new TopicConfigDto(
+    private TopicConfigResponse toDto(TopicConfigDocument doc) {
+        return new TopicConfigResponse(
             doc.getId(),
             doc.getTopic(),
             doc.getNameZh(),

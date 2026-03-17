@@ -1,11 +1,11 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.response;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 事件详情 DTO（包含事件主信息及所有消费记录）。
+ * 事件详情（响应），包含事件主信息及所有消费记录。
  *
  * @param eventId      事件 ID
  * @param traceId      链路 ID，用于跨服务追踪
@@ -26,7 +26,7 @@ import java.util.Map;
  * @param updatedAt    文档最后更新时间
  * @param consumptions 该事件下所有消费者的消费记录列表
  */
-public record EventDetailDto(
+public record EventDetailResponse(
     String eventId,
     String traceId,
     String spanId,
@@ -44,5 +44,5 @@ public record EventDetailDto(
     Instant lastSentAt,
     Instant createdAt,
     Instant updatedAt,
-    List<EventConsumptionItemDto> consumptions
+    List<EventConsumptionItemResponse> consumptions
 ) {}

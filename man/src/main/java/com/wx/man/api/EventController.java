@@ -5,9 +5,9 @@ import com.wx.bus.infrastructure.mongo.EventConsumptionDocument;
 import com.wx.bus.infrastructure.mongo.EventConsumptionRepository;
 import com.wx.bus.infrastructure.mongo.EventDocument;
 import com.wx.bus.infrastructure.mongo.EventRepository;
-import com.wx.man.api.dto.EventConsumptionItemDto;
-import com.wx.man.api.dto.EventDetailDto;
-import com.wx.man.api.dto.EventListItemDto;
+import com.wx.man.api.dto.response.EventConsumptionItemResponse;
+import com.wx.man.api.dto.response.EventDetailResponse;
+import com.wx.man.api.dto.response.EventListItemResponse;
 import com.wx.man.application.EventQueryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +27,7 @@ import java.util.List;
  * 管理端：事件列表、详情、重推。
  */
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api/v1/events")
 public class EventController {
 
     private final EventRepository eventRepository;
@@ -52,7 +52,7 @@ public class EventController {
      * occurredAtFrom/occurredAtTo 为 ISO-8601 格式（如 2025-02-28T00:00:00Z）。
      */
     @GetMapping
-    public Page<EventListItemDto> list(
+    public Page<EventListItemResponse> list(
         @RequestParam(required = false) String status,
         @RequestParam(required = false) String topic,
         @RequestParam(required = false) String userId,
@@ -82,7 +82,7 @@ public class EventController {
      * 事件详情（含消费记录）。
      */
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventDetailDto> detail(@PathVariable String eventId) {
+    public ResponseEntity<EventDetailResponse> detail(@PathVariable String eventId) {
         return eventRepository.findById(eventId)
             .map(doc -> {
                 List<EventConsumptionDocument> consumptions =
@@ -104,8 +104,8 @@ public class EventController {
         return ResponseEntity.badRequest().body(new RetryResult(false, "事件不存在或状态不允许重推"));
     }
 
-    private EventListItemDto toListItem(EventDocument doc) {
-        return new EventListItemDto(
+    private EventListItemResponse toListItem(EventDocument doc) {
+        return new EventListItemResponse(
             doc.getEventId(),
             doc.getParentEventId(),
             doc.getTopic(),
@@ -117,9 +117,9 @@ public class EventController {
         );
     }
 
-    private EventDetailDto toDetail(EventDocument doc, List<EventConsumptionDocument> consumptions) {
-        List<EventConsumptionItemDto> list = consumptions.stream()
-            .map(c -> new EventConsumptionItemDto(
+    private EventDetailResponse toDetail(EventDocument doc, List<EventConsumptionDocument> consumptions) {
+        List<EventConsumptionItemResponse> list = consumptions.stream()
+            .map(c -> new EventConsumptionItemResponse(
                 c.getId(),
                 c.getConsumerId(),
                 c.getAttemptNo(),
@@ -130,7 +130,7 @@ public class EventController {
                 c.getCreatedAt()
             ))
             .toList();
-        return new EventDetailDto(
+        return new EventDetailResponse(
             doc.getEventId(),
             doc.getTraceId(),
             doc.getSpanId(),

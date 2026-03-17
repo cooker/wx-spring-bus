@@ -110,6 +110,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { getEventList, getTopicConfigList } from '@/api'
 
 const STATUS_OPTIONS = {
   SENT: '已发送',
@@ -197,15 +198,15 @@ async function load(pageNum = 0) {
   loading.value = true
   error.value = ''
   try {
-    const params = new URLSearchParams({ page: pageNum, size: 20 })
-    if (filters.status) params.set('status', filters.status)
-    if (filters.topic) params.set('topic', filters.topic)
-    if (filters.userId) params.set('userId', filters.userId)
-    if (filters.occurredAtFrom) params.set('occurredAtFrom', filters.occurredAtFrom)
-    if (filters.occurredAtTo) params.set('occurredAtTo', filters.occurredAtTo)
-    const res = await fetch(`/api/events?${params}`)
-    if (!res.ok) throw new Error(res.statusText)
-    const data = await res.json()
+    const data = await getEventList({
+      page: pageNum,
+      size: 20,
+      status: filters.status || undefined,
+      topic: filters.topic || undefined,
+      userId: filters.userId || undefined,
+      occurredAtFrom: filters.occurredAtFrom || undefined,
+      occurredAtTo: filters.occurredAtTo || undefined,
+    })
     page.content = data.content || []
     page.number = data.number ?? 0
     page.totalPages = data.totalPages ?? 0
@@ -225,11 +226,9 @@ function onPageChange(pageNum) {
 
 async function loadTopicConfigs() {
   try {
-    const res = await fetch('/api/topic-configs')
-    if (!res.ok) return
-    const list = await res.json()
+    const list = await getTopicConfigList()
     const map = {}
-    if (Array.isArray(list)) list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
+    list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
     topicNameZhMap.value = map
   } catch {
     // ignore

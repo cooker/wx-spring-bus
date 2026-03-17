@@ -80,6 +80,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { getEventDetail, retryEvent, getTopicConfigList } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -145,13 +146,12 @@ async function load() {
   error.value = ''
   retryMessage.value = ''
   try {
-    const res = await fetch(`/api/events/${route.params.eventId}`)
-    if (!res.ok) {
-      if (res.status === 404) error.value = '事件不存在'
-      else throw new Error(res.statusText)
+    const result = await getEventDetail(route.params.eventId)
+    if (result?.notFound) {
+      error.value = '事件不存在'
       return
     }
-    event.value = await res.json()
+    event.value = result
   } catch (e) {
     error.value = e.message || '加载失败'
   } finally {
@@ -164,10 +164,9 @@ async function doRetry() {
   retrying.value = true
   retryMessage.value = ''
   try {
-    const res = await fetch(`/api/events/${event.value.eventId}/retry`, { method: 'POST' })
-    const data = await res.json().catch(() => ({}))
-    retryOk.value = res.ok && data.success
-    retryMessage.value = data.message || (res.ok ? '重推成功' : '重推失败')
+    const { success, message: msg } = await retryEvent(event.value.eventId)
+    retryOk.value = success
+    retryMessage.value = msg || (success ? '重推成功' : '重推失败')
     if (retryOk.value) await load()
   } catch (e) {
     retryMessage.value = e.message || '请求失败'
@@ -179,11 +178,9 @@ async function doRetry() {
 
 async function loadTopicConfigs() {
   try {
-    const res = await fetch('/api/topic-configs')
-    if (!res.ok) return
-    const list = await res.json()
+    const list = await getTopicConfigList()
     const map = {}
-    if (Array.isArray(list)) list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
+    list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
     topicNameZhMap.value = map
   } catch {
     // ignore

@@ -1,9 +1,9 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.response;
 
 import java.time.Instant;
 
 /**
- * 单条消费反馈记录 DTO，对应 {@code event_consumptions} 集合中的一行。
+ * 单条消费反馈记录（响应），对应 {@code event_consumptions} 集合中的一行。
  *
  * @param id           记录 ID（MongoDB 文档 ID）
  * @param consumerId   消费者 ID，对应消费该事件的业务消费者
@@ -14,7 +14,7 @@ import java.time.Instant;
  * @param errorCode    失败时的错误码或异常类型
  * @param createdAt    该记录创建时间
  */
-public record EventConsumptionItemDto(
+public record EventConsumptionItemResponse(
     String id,
     String consumerId,
     int attemptNo,

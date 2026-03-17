@@ -1,4 +1,4 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
  * @param nameZh      Topic 中文名称，长度 &lt;= 128，可选
  * @param description 说明文字，长度 &lt;= 512，可选
  */
-public record TopicConfigRequestDto(
+public record TopicConfigRequest(
     @NotBlank(message = "topic 不能为空")
     @Size(max = 256)
     String topic,

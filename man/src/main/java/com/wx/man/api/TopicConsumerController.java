@@ -2,8 +2,8 @@ package com.wx.man.api;
 
 import com.wx.bus.infrastructure.mongo.TopicConsumerDocument;
 import com.wx.bus.infrastructure.mongo.TopicConsumerRepository;
-import com.wx.man.api.dto.TopicConsumerDto;
-import com.wx.man.api.dto.TopicConsumerRequestDto;
+import com.wx.man.api.dto.request.TopicConsumerRequest;
+import com.wx.man.api.dto.response.TopicConsumerResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ import java.util.Optional;
  * 管理端：Topic–消费者配置表 CRUD。
  */
 @RestController
-@RequestMapping("/api/topic-consumers")
+@RequestMapping("/api/v1/topic-consumers")
 public class TopicConsumerController {
 
     private final TopicConsumerRepository topicConsumerRepository;
@@ -40,7 +40,7 @@ public class TopicConsumerController {
      * 全量列表；可选按 topic、consumerId 筛选。
      */
     @GetMapping
-    public List<TopicConsumerDto> list(
+    public List<TopicConsumerResponse> list(
         @RequestParam(required = false) String topic,
         @RequestParam(required = false) String consumerId
     ) {
@@ -64,7 +64,7 @@ public class TopicConsumerController {
      * 单条详情。
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TopicConsumerDto> get(@PathVariable String id) {
+    public ResponseEntity<TopicConsumerResponse> get(@PathVariable String id) {
         return topicConsumerRepository.findById(id)
             .map(doc -> ResponseEntity.ok(toDto(doc)))
             .orElse(ResponseEntity.notFound().build());
@@ -74,7 +74,7 @@ public class TopicConsumerController {
      * 新增。
      */
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TopicConsumerRequestDto body) {
+    public ResponseEntity<?> create(@Valid @RequestBody TopicConsumerRequest body) {
         String topic = body.topic().trim();
         String consumerId = body.consumerId().trim();
         if (topicConsumerRepository.findOneByTopicAndConsumerId(topic, consumerId).isPresent()) {
@@ -98,7 +98,7 @@ public class TopicConsumerController {
      * 更新。
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody TopicConsumerRequestDto body) {
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody TopicConsumerRequest body) {
         Optional<TopicConsumerDocument> opt = topicConsumerRepository.findById(id);
         if (opt.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -133,8 +133,8 @@ public class TopicConsumerController {
         return ResponseEntity.ok().body(new MessageBody(true, "已删除"));
     }
 
-    private TopicConsumerDto toDto(TopicConsumerDocument doc) {
-        return new TopicConsumerDto(
+    private TopicConsumerResponse toDto(TopicConsumerDocument doc) {
+        return new TopicConsumerResponse(
             doc.getId(),
             doc.getTopic(),
             doc.getConsumerId(),

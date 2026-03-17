@@ -1,9 +1,9 @@
-package com.wx.man.api.dto;
+package com.wx.man.api.dto.response;
 
 import java.util.List;
 
 /**
- * 首页概览统计 DTO。
+ * 首页概览统计（响应）。
  * <p>
  * 用于首页展示指定日期的整体事件情况，包括处理中数量、总事件数、Topic/消费者数量以及 0–23 点每小时的事件数。
  * </p>
@@ -15,7 +15,7 @@ import java.util.List;
  * @param consumerCount        已配置的消费者总数
  * @param hourlyCounts         长度为 24 的列表，下标为小时（0–23），值为该小时的事件数量
  */
-public record HomeStatsDto(
+public record HomeStatsResponse(
     String date,
     long todayProcessingCount,
     long totalEventCount,

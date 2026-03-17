@@ -125,6 +125,13 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
+import {
+  getTopicConfigList,
+  getTopicConsumerList,
+  createTopicConsumer,
+  updateTopicConsumer,
+  deleteTopicConsumer,
+} from '@/api'
 
 const loading = ref(false)
 const error = ref('')
@@ -178,11 +185,9 @@ function formatTime(iso) {
 
 async function loadTopicConfigs() {
   try {
-    const res = await fetch('/api/topic-configs')
-    if (!res.ok) return
-    const data = await res.json()
+    const list = await getTopicConfigList()
     const map = {}
-    if (Array.isArray(data)) data.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
+    list.forEach((item) => { if (item.topic && item.nameZh) map[item.topic] = item.nameZh })
     topicNameZhMap.value = map
   } catch {
     // ignore
@@ -193,14 +198,10 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const params = new URLSearchParams()
-    if (filters.topic) params.set('topic', filters.topic)
-    if (filters.consumerId) params.set('consumerId', filters.consumerId)
-    const qs = params.toString()
-    const res = await fetch(`/api/topic-consumers${qs ? `?${qs}` : ''}`)
-    if (!res.ok) throw new Error(res.statusText)
-    const data = await res.json()
-    list.value = Array.isArray(data) ? data : []
+    list.value = await getTopicConsumerList({
+      topic: filters.topic || undefined,
+      consumerId: filters.consumerId || undefined,
+    })
   } catch (e) {
     error.value = e.message || '加载失败'
   } finally {
@@ -248,21 +249,10 @@ async function submitForm() {
       sortOrder: form.sortOrder,
       description: form.description ? form.description.trim() : null,
     }
-    const url = editingId.value
-      ? `/api/topic-consumers/${editingId.value}`
-      : '/api/topic-consumers'
-    const method = editingId.value ? 'PUT' : 'POST'
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) {
-      const msg = data.message || res.statusText || '保存失败'
-      error.value = msg
-      message.error(msg)
-      return
+    if (editingId.value) {
+      await updateTopicConsumer(editingId.value, body)
+    } else {
+      await createTopicConsumer(body)
     }
     message.success(editingId.value ? '保存成功' : '新增成功')
     closeModal()
@@ -279,14 +269,7 @@ async function submitForm() {
 async function doDelete(id) {
   error.value = ''
   try {
-    const res = await fetch(`/api/topic-consumers/${id}`, { method: 'DELETE' })
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}))
-      const msg = data.message || res.statusText || '删除失败'
-      error.value = msg
-      message.error(msg)
-      return
-    }
+    await deleteTopicConsumer(id)
     message.success('已删除')
     load()
   } catch (e) {

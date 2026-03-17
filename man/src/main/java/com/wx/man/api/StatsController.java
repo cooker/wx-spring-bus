@@ -2,7 +2,7 @@ package com.wx.man.api;
 
 import com.wx.bus.infrastructure.mongo.TopicConfigRepository;
 import com.wx.bus.infrastructure.mongo.TopicConsumerRepository;
-import com.wx.man.api.dto.HomeStatsDto;
+import com.wx.man.api.dto.response.HomeStatsResponse;
 import com.wx.man.application.EventQueryService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -21,7 +21,7 @@ import java.util.Set;
  * 管理端：首页等统计接口。
  */
 @RestController
-@RequestMapping("/api/stats")
+@RequestMapping("/api/v1/stats")
 public class StatsController {
 
     private static final Set<String> PROCESSING_STATUSES = Set.of("PENDING", "SENT", "PARTIAL", "RETRYING");
@@ -45,7 +45,7 @@ public class StatsController {
      * @param date 可选，yyyy-MM-dd，不传则使用当天（服务器默认时区）。
      */
     @GetMapping("/home")
-    public HomeStatsDto home(
+    public HomeStatsResponse home(
         @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate date
     ) {
         ZoneId zone = ZoneId.systemDefault();
@@ -65,7 +65,7 @@ public class StatsController {
             dayStart, dayEnd, zone
         );
 
-        return new HomeStatsDto(
+        return new HomeStatsResponse(
             target.toString(),
             todayProcessingCount,
             totalEventCount,

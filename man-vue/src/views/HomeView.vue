@@ -55,6 +55,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
+import { getHomeStats } from '@/api'
 
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'))
 
@@ -96,10 +97,8 @@ async function loadStats() {
   try {
     const raw = selectedDate.value
     const date = raw ? dayjs(raw).format('YYYY-MM-DD') : ''
-    const url = date ? `/api/stats/home?date=${encodeURIComponent(date)}` : '/api/stats/home'
-    const res = await fetch(url)
-    if (!res.ok) return
-    const data = await res.json()
+    const data = await getHomeStats(date)
+    if (!data) return
     stats.value = {
       date: data.date ?? '',
       todayProcessingCount: data.todayProcessingCount ?? 0,
